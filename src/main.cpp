@@ -68,6 +68,14 @@ int main(int argc, char** argv) {
             if (auto arg = parser.get("-v")) {
                 verboseLevel = arg.value;
             }
+	    if (auto arg = parser.get("--min"))
+	    {
+		    min = arg.value;
+	    }
+	    if (auto arg = parser.get("--max"))
+	    {
+		    max = arg.value;
+	    }
             if (arrSize <= 0) {
                 throw std::invalid_argument{"Size has to be greater than 0"};
             }
@@ -80,7 +88,7 @@ int main(int argc, char** argv) {
             }
             if (min >= max) {
                 throw std::invalid_argument{
-                    "Min array valu has to be smaller than max!"};
+                    "Min array value has to be smaller than max!"};
             }
             Logger logger{"Log.txt",       "ArraySize",       "TaskCount",
                           "compareTimeMs", "comparisonCount", "actualTimeMs"};
