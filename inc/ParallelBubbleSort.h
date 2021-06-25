@@ -49,7 +49,7 @@ class ParallelBubbleSort {
     }
     return comparisonCount;
   }
-  static void childProcess(MPI_Comm& parent,
+  static void childProcess(MPI_Comm parent,
                            int,
                            std::chrono::milliseconds delay) {
     while (true) {
@@ -72,14 +72,14 @@ class ParallelBubbleSort {
   void processPairs(std::vector<int>& arr, int startIndex, int count) {
     // gather compared pairs
     auto sendIndex = startIndex;
-    for (auto i = 0; i < count; ++i) {
+    for (auto i = 1; i <= count; ++i) {
       MPI_Send(arr.data() + sendIndex, 2, MPI_INT, i, compareRequest,
                _taskComm);
       sendIndex += 2;
     }
     // gather compared pairs
     auto receiveIndex = startIndex;
-    for (auto i = 0; i < count; ++i) {
+    for (auto i = 1; i <= count; ++i) {
       MPI_Recv(arr.data() + receiveIndex, 2, MPI_INT, i, compareResponse,
                _taskComm, MPI_STATUS_IGNORE);
       receiveIndex += 2;
