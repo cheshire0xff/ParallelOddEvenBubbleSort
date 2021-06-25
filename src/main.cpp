@@ -109,6 +109,7 @@ int main(int argc, char** argv) {
             }
             printf("\n");
             printf("Performed %ld comparisons.\n", comparisonCount);
+            printf("Number of worker processes: %d .\n", workersCount);
             int approxSingleProcessTime = compareDelay * comparisonCount;
             int approxMultiProcessTime = approxSingleProcessTime / workersCount;
             printf("Approx single process time:\t%d ms \n",
