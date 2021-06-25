@@ -11,13 +11,9 @@ class Logger {
 
    public:
     template <typename Indices = std::make_index_sequence<sizeof...(Columns)>>
-    constexpr Logger(std::string filename, const Columns&... args)
+    constexpr Logger(const std::string& filename, const Columns&... args)
         : filename(filename) {
         fill(Indices{}, args...);
-    }
-    template <size_t... I>
-    void fill(std::index_sequence<I...>, const Columns&... args) {
-        ((arr[I] = args), ...);
     }
 
     template <typename... Values>
@@ -32,6 +28,12 @@ class Logger {
         }
         ((file << values << ","), ...);
         file << "\n";
+    }
+
+   private:
+    template <size_t... I>
+    void fill(std::index_sequence<I...>, const Columns&... args) {
+        ((arr[I] = args), ...);
     }
 };
 

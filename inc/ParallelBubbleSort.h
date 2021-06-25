@@ -21,12 +21,12 @@ class ParallelBubbleSort {
             size_t pairsToProcess =
                 state == even ? arr.size() / 2 : arr.size() / 2 - 1;
             comparisonCount += pairsToProcess;  // just for statistics
-	    auto optimalTaskCount = getOptimalSplit(pairsToProcess); 
-	if (_verbose >= 2) {
-	    printf("Optimal taskSplit: %ld.\n", optimalTaskCount);
-	}
+            auto optimalTaskCount = getOptimalSplit(pairsToProcess);
+            if (_verbose >= 2) {
+                printf("Optimal taskSplit: %ld.\n", optimalTaskCount);
+            }
             int startIndex = state;
-	    
+
             while (pairsToProcess) {
                 auto chunkToProcess = pairsToProcess;
                 if (pairsToProcess > optimalTaskCount) {
@@ -111,21 +111,17 @@ class ParallelBubbleSort {
         }
     }
 
-    size_t getOptimalSplit(int pairsCount) const
-    {
-	    for (auto i = 1; i <= pairsCount; ++i)
-	    {
-		    size_t tasks = pairsCount / i;
-		    if (pairsCount % i)
-		    {
-			    ++tasks;
-		    }
-		    if (tasks <= _taskCount)
-		    {
-			    return tasks;
-		    }
-	    }
-	    return 1;
+    size_t getOptimalSplit(int pairsCount) const {
+        for (auto i = 1; i <= pairsCount; ++i) {
+            size_t tasks = pairsCount / i;
+            if (pairsCount % i) {
+                ++tasks;
+            }
+            if (tasks <= _taskCount) {
+                return tasks;
+            }
+        }
+        return 1;
     }
 
    private:
