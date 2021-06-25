@@ -1,3 +1,6 @@
+#ifndef INC_RANDOM_GENERATOR_H__
+#define INC_RANDOM_GENERATOR_H__
+
 #include <random>
 
 class RandomGenerator {
@@ -10,3 +13,5 @@ class RandomGenerator {
     std::mt19937 gen;
     std::uniform_int_distribution<int> distribution;
 };
+
+#endif //INC_RANDOM_GENERATOR_H__

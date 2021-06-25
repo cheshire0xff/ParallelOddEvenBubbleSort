@@ -1,5 +1,5 @@
-#ifndef INC_TIMER_H
-#define INC_TIMER_H
+#ifndef INC_TIMER_H__
+#define INC_TIMER_H__
 
 #include <chrono>
 
@@ -16,4 +16,4 @@ class Timer {
     std::chrono::time_point<std::chrono::system_clock> startTime;
 };
 
-#endif
+#endif // INC_TIMER_H__

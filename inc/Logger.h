@@ -1,5 +1,5 @@
-#ifndef LOGGER_H
-#define LOGGER_H
+#ifndef INC_LOGGER_H__
+#define INC_LOGGER_H__
 
 #include <fstream>
 
@@ -37,4 +37,4 @@ class Logger {
     }
 };
 
-#endif
+#endif // INC_LOGGER_H__

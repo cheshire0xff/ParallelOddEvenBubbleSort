@@ -1,5 +1,5 @@
-#ifndef INC_ARG_PARSER
-#define INC_ARG_PARSER
+#ifndef INC_ARG_PARSER_H__
+#define INC_ARG_PARSER_H__
 #include <map>
 #include <string>
 
@@ -52,4 +52,4 @@ class ArgParser {
     std::map<const std::string, int> results;
 };
 
-#endif
+#endif // INC_ARG_PARSER_H__

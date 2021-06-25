@@ -1,5 +1,5 @@
-#ifndef INC_PARALLEL_BUBBLE_SORT
-#define INC_PARALLEL_BUBBLE_SORT
+#ifndef INC_PARALLEL_BUBBLE_SORT_H__
+#define INC_PARALLEL_BUBBLE_SORT_H__
 
 #include <mpi.h>
 #include <fstream>
@@ -130,4 +130,4 @@ class ParallelBubbleSort {
     int _verbose;
 };
 
-#endif
+#endif // INC_PARALLEL_BUBBLE_SORT_H__
