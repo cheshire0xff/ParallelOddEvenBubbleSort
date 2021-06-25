@@ -9,27 +9,35 @@
 #include "RandomGenerator.h"
 #include "Timer.h"
 
-void generateArray(std::vector<int>& arr, size_t arrSize);
+namespace defaults
+{
+	constexpr int kDelayMs = 1;
+	constexpr int kMin= -0xFFFF;
+	constexpr int kMax= 0xFFFF;
+	constexpr int kVerboseLevel= 0;
+}
 
-MPI_Comm spawn(char* cmd, int delayMs, int count);
 
 void parentHelp() {
-  printf("main ARRAY_SIZE TASK_COUNT [OPTION]\n");
-  printf("\t ARRAY_SIZE - size of the array to sort (positive integer)\n");
+  printf("main ARRAY_SIZE [OPTION]\n");
+  printf("\tARRAY_SIZE\n");
+  printf("\t\tsize of the array to sort (positive integer)\n");
   printf(
-      "\t --delay COMPARE_DELAY_MS - compare opration delay in milliseconds "
+      "\t--delay COMPARE_DELAY_MS\n");
+ printf("\t\tcompare opration delay in milliseconds "
       "used to simulate computation heavy operation (positive integer)\n");
   printf(
-      "\t -v VERBOSE_LEVEL - 0 -> basic info, 1 -> debug print every pass "
-      "(positive integer)\n");
+      "\t-v VERBOSE_LEVEL\n");
+ printf("\t\t0 = basic info, 1 = debug print every pass , 2 = detailed\n");
+  printf("\t--log\n");
+ printf("\t\tgenerate statistics Log file\n");
+  printf("\t--min VALUE\n");
+ printf("\t\tmin value of generated array (integer)\n");
+  printf("\t--max VALUE\n");
+ printf("\t\tmax value of generated array (integer)\n");
 }
+void generateArray(std::vector<int>& arr, size_t arrSize, int min, int max);
 
-void childHelp() {
-  printf("main COMPARE_DELAY_MS\n");
-  printf(
-      "\t COMPARE_DELAY_MS - compare opration delay in milliseconds used to "
-      "simulate computation heavy operation (positive integer)\n");
-}
 
 int main(int argc, char** argv) {
   /********** Initialize MPI **********/
@@ -44,17 +52,20 @@ ArgParser parser{};
 parser.addArgument("--delay", ArgParser::Type::integer);
 parser.addArgument("-v", ArgParser::Type::integer);
 parser.addArgument("--log", ArgParser::Type::flag);
+parser.addArgument("--min", ArgParser::Type::integer);
+parser.addArgument("--max", ArgParser::Type::integer);
 parser.parse(argc - 2, argv + 2);
 
   if (commRank == 0) {
     try {
       if (argc < 2) {
-        printf("Too few arguments!\n");
         throw std::invalid_argument{"Too few arguments"};
       }
       auto arrSize = std::stoi(argv[1]);
-      auto compareDelay = 1;
-      auto verboseLevel = 0;
+      auto compareDelay = defaults::kDelayMs;
+      auto verboseLevel = defaults::kVerboseLevel;
+      auto min = defaults::kMin;
+      auto max = defaults::kMax;
       if (auto arg = parser.get("--delay")) {
         compareDelay = arg.value;
       }
@@ -70,11 +81,13 @@ parser.parse(argc - 2, argv + 2);
       if (compareDelay < 0) {
         throw std::invalid_argument{"Delay cannot be negative!"};
       }
+      if (min >= max) {
+        throw std::invalid_argument{"Min array valu has to be smaller than max!"};
+      }
 	  Logger logger{"Log.txt", "ArraySize", "TaskCount", "compareTimeMs", "comparisonCount", "actualTimeMs"};
       std::vector<int> arr;
-      generateArray(arr, arrSize);
+      generateArray(arr, arrSize, min, max);
       Timer timer;
-      timer.start();
       timer.start();
       auto workersCount = processCount - 1;
       ParallelBubbleSort bubbleSort{MPI_COMM_WORLD, static_cast<size_t>(workersCount),
@@ -100,12 +113,16 @@ parser.parse(argc - 2, argv + 2);
       {
 	     logger.log(arrSize, workersCount, compareDelay, comparisonCount, actualTime);
       }
-      MPI_Abort(MPI_COMM_WORLD, 1);
 
+	printf("Exiting...");
+	ParallelBubbleSort::stopChildProcesses(MPI_COMM_WORLD);
+	printf(" success.\n");
     } catch (std::invalid_argument e) {
       printf("Invalid arguments! %s\n", e.what());
       parentHelp();
-      MPI_Abort(MPI_COMM_WORLD, 1);
+      printf("Exiting...");
+      ParallelBubbleSort::stopChildProcesses(MPI_COMM_WORLD);
+      printf(" success.\n");
       return 1;
     }
   } else {
@@ -127,11 +144,11 @@ parser.parse(argc - 2, argv + 2);
   return 0;
 }
 
-void generateArray(std::vector<int>& arr, size_t arrSize) {
+void generateArray(std::vector<int>& arr, size_t arrSize, int min, int max) {
   arr.reserve(arrSize);
   printf("This is the unsorted array: ");
   {
-    RandomGenerator rg{-0xFFFF, 0xFFFF};
+    RandomGenerator rg{min, max};
     for (auto i = 0U; i < arrSize; ++i) {
       auto genValue = rg.generate();
       arr.push_back(genValue);
