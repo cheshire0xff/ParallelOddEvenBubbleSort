@@ -9,7 +9,11 @@ elif [ $1 -eq 2 ] ; then
 	done
 elif [ $1 -eq 3 ] ; then
 	for i in $(seq 10 200); do 
-		mpirun -n 9 ./main $i --log --delay 1 || exit 2; 
+		mpirun -n 9 ./main $i --log --delay 1 || exit 3; 
+	done
+elif [ $1 -eq 4 ] ; then
+	for i in $(seq 200 300); do 
+		mpirun -n 9 ./main $i --log --delay 1 || exit 4; 
 	done
 else 
 	echo "No test with this id!"
